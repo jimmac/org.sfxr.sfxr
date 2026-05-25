@@ -1,0 +1,64 @@
+{
+  "app-id": "org.sfxr.sfxr",
+  "runtime": "org.freedesktop.Platform",
+  "runtime-version": "22.08",
+  "sdk": "org.freedesktop.Sdk",
+  "command": "sfxr",
+  "finish-args": [
+    "--share=ipc",
+    "--socket=x11",
+    "--socket=wayland",
+    "--socket=pulseaudio",
+    "--device=dri",
+    "--filesystem=home",
+    "--talk-name=org.freedesktop.portal.Desktop"
+  ],
+  "modules": [
+    {
+      "name": "sdl12-compat",
+      "buildsystem": "cmake-ninja",
+      "config-opts": [
+        "-DSDL12TESTS=OFF"
+      ],
+      "sources": [
+        {
+          "type": "archive",
+          "url": "https://github.com/libsdl-org/sdl12-compat/releases/download/release-1.2.72/sdl12-compat-1.2.72.tar.gz",
+          "sha256": "86b201257e3073546b00e276bc6668412458b3bb8eeb7b365ff65f0c0ce14133"
+        }
+      ]
+    },
+    {
+      "name": "sfxr",
+      "buildsystem": "simple",
+      "build-commands": [
+        "sed -i 's|/usr/share/sfxr/|/app/share/sfxr/|g' main.cpp",
+        "cp sdlkit-portal.h sdlkit.h",
+        "g++ main.cpp $(sdl-config --cflags) $(sdl-config --libs) -o sfxr",
+        "install -Dm755 sfxr /app/bin/sfxr",
+        "install -Dm644 font.tga /app/share/sfxr/font.tga",
+        "install -Dm644 ld48.tga /app/share/sfxr/ld48.tga",
+        "install -Dm644 sfxr.bmp /app/share/sfxr/sfxr.bmp",
+        "install -Dm644 org.sfxr.sfxr.png /app/share/icons/hicolor/64x64/apps/org.sfxr.sfxr.png",
+        "sed 's/Icon=sfxr/Icon=org.sfxr.sfxr/' sfxr.desktop > org.sfxr.sfxr.desktop",
+        "install -Dm644 org.sfxr.sfxr.desktop /app/share/applications/org.sfxr.sfxr.desktop"
+      ],
+      "sources": [
+        {
+          "type": "archive",
+          "url": "https://mirrorservice.org/sites/ftp.netbsd.org/pub/pkgsrc/distfiles/sfxr-sdl-1.2.1.tar.gz",
+          "sha256": "ca93be8964c92fe3a2c945640cd3e93c95ae7abe24290818f4fe7f6e5a7cd835"
+        },
+        {
+          "type": "file",
+          "path": "sdlkit.h",
+          "dest-filename": "sdlkit-portal.h"
+        },
+        {
+          "type": "file",
+          "path": "org.sfxr.sfxr.png"
+        }
+      ]
+    }
+  ]
+}
